@@ -1,0 +1,32 @@
+[package]
+name = "deltamesh-cli"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+description = "Benchmark and inspection CLI for deltamesh"
+publish = false
+
+[[bin]]
+name = "deltamesh"
+path = "src/main.rs"
+
+[features]
+# GPU support is on by default. Build with `--no-default-features` for a CPU-only binary.
+default = ["gpu"]
+gpu = ["deltamesh/gpu"]
+
+[dependencies]
+deltamesh = { path = "../core", version = "0.1.0" }
+rayon.workspace = true
+rustc-hash.workspace = true
+anyhow = "1.0.104"
+clap = { version = "4.6.7", features = ["derive"] }
+memmap2 = "0.9.11"
+libc = "0.2.190"
+
+# Global allocator for the CLI only. It lowers peak RSS without changing speed.
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+mimalloc = "0.1.52"
