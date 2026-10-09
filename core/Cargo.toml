@@ -1,0 +1,29 @@
+[package]
+name = "deltamesh"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+description = "Incremental block meshing of streamed point-cloud segments, with optional GPU acceleration"
+readme = "../README.md"
+keywords = ["mesh", "point-cloud", "surface-reconstruction", "sdf", "gpu"]
+categories = ["graphics", "algorithms", "rendering::data-formats"]
+include = ["src/**/*", "Cargo.toml", "LICENSE-MIT", "LICENSE-APACHE"]
+
+[dependencies]
+rayon.workspace = true
+rustc-hash.workspace = true
+meshopt = "0.6.2"
+wgpu = { version = "30.0.1", optional = true }
+pollster = { version = "1.0.1", optional = true }
+bytemuck = { version = "1.25.2", features = ["derive"], optional = true }
+
+[features]
+default = []
+## GPU paths (wgpu: Metal, Vulkan, DX12)
+gpu = ["dep:wgpu", "dep:pollster", "dep:bytemuck"]
+
+[package.metadata.docs.rs]
+all-features = true
