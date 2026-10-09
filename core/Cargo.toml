@@ -8,7 +8,7 @@ authors.workspace = true
 repository.workspace = true
 description = "Incremental block meshing of streamed point-cloud segments, with optional GPU acceleration"
 readme = "../README.md"
-keywords = ["mesh", "point-cloud", "surface-reconstruction", "sdf", "gpu"]
+keywords = ["mesh", "point-cloud", "reconstruction", "sdf", "gpu"]
 categories = ["graphics", "algorithms", "rendering::data-formats"]
 include = ["src/**/*", "Cargo.toml", "LICENSE-MIT", "LICENSE-APACHE"]
 
