@@ -19,7 +19,7 @@ default = ["gpu"]
 gpu = ["deltamesh/gpu"]
 
 [dependencies]
-deltamesh = { path = "../core", version = "0.1.0" }
+deltamesh = { path = "../core", version = "0.1.1" }
 rayon.workspace = true
 rustc-hash.workspace = true
 anyhow = "1.0.104"

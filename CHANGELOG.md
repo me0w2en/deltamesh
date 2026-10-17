@@ -4,7 +4,17 @@ All notable changes to this project are documented in this file.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses
 [Semantic Versioning](https://semver.org/).
 
-## [0.1.0] - Unreleased
+## [0.1.1] - 2026-10-18
+
+### Fixed
+
+- GPU accumulation stalled on the first segment on devices whose `min_uniform_buffer_offset_alignment`
+  is smaller than the 96-byte uniform block (for example 64 bytes on an RTX 4050 under Vulkan). The
+  slot stride was `max(alignment, size)`, so the second dynamic offset (96) was not a multiple of
+  the alignment and failed wgpu validation. The stride is now the size rounded up to a multiple of
+  the alignment (128 in that case).
+
+## [0.1.0] - 2026-10-09
 
 ### Added
 
