@@ -52,6 +52,13 @@ const ST_EST: u32 = 2;
 /// Cell state: dropped (estimation failed).
 const ST_DROP: u32 = 3;
 
+/// Byte distance between uniform slots: `size` rounded up to a multiple of the device's
+/// `min_uniform_buffer_offset_alignment`, so every dynamic offset is aligned.
+fn uniform_stride(min_align: u64, size: u64) -> u64 {
+    let a = min_align.max(1);
+    size.div_ceil(a) * a
+}
+
 /// Uniform parameters of one dispatch; layout and field meanings match `U` in `gpu_bins.wgsl`.
 #[repr(C)]
 #[derive(Clone, Copy, Default, bytemuck::Pod, bytemuck::Zeroable)]
@@ -386,8 +393,10 @@ impl GpuBinner {
             scatter_sg,
             nb,
         };
-        let align =
-            (lim.min_uniform_buffer_offset_alignment as u64).max(std::mem::size_of::<U>() as u64);
+        let align = uniform_stride(
+            lim.min_uniform_buffer_offset_alignment as u64,
+            std::mem::size_of::<U>() as u64,
+        );
         let uni = device.create_buffer(&wgpu::BufferDescriptor {
             label: Some("gpu_bins uni"),
             size: align * SLOTS as u64,
@@ -1259,6 +1268,16 @@ fn convert(rec: &[u32], policy: NormalPolicy) -> (Vec<Bin>, BinStats) {
 mod tests {
     use super::*;
     use crate::bins;
+
+    #[test]
+    fn uniform_stride_is_a_multiple_of_the_alignment() {
+        // The 96-byte `U` on a device asking for 64-byte offsets needs a 128-byte stride.
+        assert_eq!(uniform_stride(64, 96), 128);
+        assert_eq!(uniform_stride(256, 96), 256);
+        assert_eq!(uniform_stride(32, 96), 96);
+        assert_eq!(uniform_stride(0, 96), 96);
+        assert_eq!(uniform_stride(64, std::mem::size_of::<U>() as u64) % 64, 0);
+    }
 
     /// Binner on the shared device, or `None` when no GPU is available.
     fn binner() -> Option<GpuBinner> {
